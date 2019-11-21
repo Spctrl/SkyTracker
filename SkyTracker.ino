@@ -1,3 +1,14 @@
+/* 
+ *  Sky Tracker 
+ *  Created by M.Kawecki
+ *  
+ *  Models:
+ *  Barn Door Tracker for Astrophotography by fermunoz
+ *  https://www.thingiverse.com/thing:1133193
+ *  
+ *  
+ */
+
 #include <TimerOne.h>
 #include <AccelStepper.h>
 
