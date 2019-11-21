@@ -73,6 +73,7 @@ void takePhoto(void) {
 
 void setup() {
   pinMode(buttonPin, INPUT);
+  pinMode(buttonPin, OUTPUT);
   stepper.setMaxSpeed(1000);
   stepper.setAcceleration(4000);
   stepper.setSpeed(1000);
