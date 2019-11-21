@@ -1,16 +1,7 @@
+#include <TimerOne.h>
 #include <AccelStepper.h>
-#include <MultiStepper.h>
 
-#define LEDpin 6
-#define buttonPin 2
-
-// Define number of steps per rotation:
-const int stepsPerRevolution = 4076;
-
-// Direction of revolutions
-int dir = 1;
-
-// Wiring:
+// Motor Wiring:
 // Pin 8 to IN1 on the ULN2003 driver
 // Pin 9 to IN2 on the ULN2003 driver
 // Pin 10 to IN3 on the ULN2003 driver
@@ -19,6 +10,20 @@ int dir = 1;
 #define IN2  9
 #define IN3  10
 #define IN4  11
+
+#define LEDpin 6
+#define buttonPin 2
+
+// Define number of steps per rotation:
+const int stepsPerRevolution = 4076;
+// Direction of revolutions
+int dir = 1;
+// Trigger signal
+bool trigger = false;
+bool state = false;
+bool output = false;
+// counter 
+int count = 0;
 
 AccelStepper stepper(AccelStepper::HALF4WIRE, IN1, IN3, IN2, IN4);
 
@@ -59,19 +64,54 @@ void setup() {
   stepper.setMaxSpeed(1000);
   stepper.setAcceleration(4000);
   stepper.setSpeed(1000);
+  Timer1.initialize(400);
+  Timer1.attachInterrupt(timerISR);
   //attachInterrupt(digitalPinToInterrupt(buttonPin), takePhoto, RISING);
-  Serial.begin(9600);
 }
+
 void loop() {
-  
-  
-  if (digitalRead(buttonPin) == 1){
-    takePhoto();
-    if (stepper.distanceToGo() == 0){
-      stepper.move(stepsPerRevolution*2);
+  if (digitalRead(buttonPin) == 1 && trigger == false){
+    trigger = true;
   }
+  if (stepper.distanceToGo() == 0){
+    stepper.move(stepsPerRevolution*2);
   }
-  //Serial.println(stepper.distanceToGo());
   stepper.run();
-  
+}
+
+void timerISR(){
+  if(trigger == true){
+    state = !state;
+    
+    count += state;
+
+    if(count <= 76){
+      output = state;
+    }
+    if(count > 76 && count <= 1134){
+      output = false;
+    }
+    if(count > 1134 && count <= 1149){
+      output = state;
+    }
+    if(count > 1149 && count <= 1210){
+      output = false;
+    }
+    if(count > 1210 && count <= 1225){
+      output = state;
+    }
+    if(count > 1225 && count <= 1360){
+      output = false;
+    }
+    if(count > 1360 && count <= 1375){
+      output = state;
+    }
+    if(count > 1375){
+      output = false;
+      trigger = false;
+      state = false;
+      count = 0;
+    }
+    digitalWrite(13, output);
+  }
 }
