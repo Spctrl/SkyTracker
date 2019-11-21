@@ -25,6 +25,7 @@ bool output = false;
 // counter 
 int count = 0;
 
+unsigned long lastTime, currentTime, difference;
 AccelStepper stepper(AccelStepper::HALF4WIRE, IN1, IN3, IN2, IN4);
 
 void takePhoto(void) {
@@ -70,8 +71,11 @@ void setup() {
 }
 
 void loop() {
-  if (digitalRead(buttonPin) == 1 && trigger == false){
+  currentTime = millis();
+  difference = currentTime - lastTime;
+  if ((digitalRead(buttonPin) == 1 || difference>5000) && trigger == false ){
     trigger = true;
+    lastTime = currentTime;
   }
   if (stepper.distanceToGo() == 0){
     stepper.move(stepsPerRevolution*2);
