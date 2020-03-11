@@ -25,8 +25,9 @@
 #define LEDpin 6
 #define buttonPin 2
 
-// Define number of steps per rotation:
-const int stepsPerRevolution = 4076;
+// Define number of steps per rotation for big gear (4096 - motor * 4.3 gear ratio):
+//const int stepsPerRevolution = 4076;
+const int stepsPerRevolution = 4096 * 4.3;
 // Direction of revolutions
 int dir = 1;
 // Trigger signal
@@ -38,6 +39,7 @@ int count = 0;
 
 unsigned long lastTime, currentTime, difference;
 AccelStepper stepper(AccelStepper::HALF4WIRE, IN1, IN3, IN2, IN4);
+//AccelStepper stepper(5, IN1, IN3, IN2, IN4);
 
 void takePhoto(void) {
   int i;
@@ -74,8 +76,8 @@ void takePhoto(void) {
 void setup() {
   pinMode(buttonPin, INPUT);
   pinMode(buttonPin, OUTPUT);
-  stepper.setMaxSpeed(1000);
-  stepper.setAcceleration(4000);
+  stepper.setMaxSpeed(320);
+  stepper.setAcceleration(2000);
   stepper.setSpeed(1000);
   Timer1.initialize(400);
   Timer1.attachInterrupt(timerISR);
@@ -90,7 +92,8 @@ void loop() {
     lastTime = currentTime;
   }
   if (stepper.distanceToGo() == 0){
-    stepper.move(stepsPerRevolution*2);
+    stepper.move(-stepsPerRevolution);
+    delay(1000);
   }
   stepper.run();
 }
